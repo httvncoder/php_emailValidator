@@ -20,8 +20,8 @@
 </script> -->
 
 <?php   
-	$result = dns_get_record("yandex.ru", DNS_MX);
-	echo '<pre>';
-	print_r($result);
-	echo '</pre>';
+	// $mx = 'mail.gorodavt1o.com';
+	// $fp = @fsockopen($mx,25, $errno, $errstr, 2);
+	// $result = $fp ? true : false;
+	// print_r($result);
 ?>

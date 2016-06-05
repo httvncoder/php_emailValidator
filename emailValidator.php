@@ -1,65 +1,77 @@
 <?php
 
-	// if(isset($_POST['name']) && isset($_POST['email']))
-	// {
-	// 	echo 'Имя: ' , $_POST['name'] , ', email: ' , $_POST['email'];
-	// }
-	// else
-	// {
-	// 	echo 'некорректный ввод';
-	// }
+/**
+ * [requiredFields description]
+ * @return [type] [description]
+ */
+function requiredFields()
+{
+	return (!isset($_POST['name']) || empty($_POST['name']) || !isset($_POST['email']) || empty($_POST['email']) || !isset($_POST['phone']) || empty($_POST['phone'])) ? false : true;
+}
 
-	function requiredFields()
-	{
-		return (!isset($_POST['name']) || empty($_POST['name']) || !isset($_POST['email']) || empty($_POST['email']) || !isset($_POST['phone']) || empty($_POST['phone'])) ? false : true;
-	}
-	
-	function emailFormat()
-	{
-		return (!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) ? false : true;		
-	}
+/**
+ * [emailFormat description]
+ * @return [type] [description]
+ */
+function emailFormat()
+{
+	return (!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) ? false : true;		
+}
 
-	function checkEmailMX()
+/**
+ * [checkEmailMX description]
+ * @return [type] [description]
+ */
+function checkEmailMX()
+{
+	$emailDomain = substr(strrchr($_POST['email'], "@"), 1);		
+	$emailDomain = dns_get_record($emailDomain, DNS_MX);
+	$mxQuery = (isset($emailDomain[0]['target']) && !empty($emailDomain[0]['target'])) ? $emailDomain[0]['target'] : false;
+	return $mxQuery;
+}
+
+/**
+ * [mxConnect description]
+ * @return [type] [description]
+ */
+function mxConnect()
+{
+	if(!checkEmailMX())
 	{
-		echo 'checkEmailMX';
-	}
-	
-	if(!requiredFields())
-	{
-		echo 'Некорректный ввод!';
-	}
-	elseif(!emailFormat())
-	{
-		echo 'Проверьте правильность ввода EMAIL!';
+		echo 'Домен ящика не обнаружен в DNS! <br />';
 	}
 	else
 	{
-		// echo 'Поля заполнены верно!';
-		checkEmailMX();
+		$mxConn = @fsockopen(checkEmailMX(),25, $errno, $errstr, 2);
+		return $mxConn ? true : false;
 	}
+}
 
-// private function doUnset()
-// {
-//     unset($_POST['alpha'];
-//     unset($_POST['gamma'];
-//     unset($_GET['eta'];
-//     unset($_GET['zeta'];
-// }
+/**
+ * [run description]
+ * @return [type] [description]
+ */
+function run()
+{
+	if(!requiredFields())
+	{
+		echo 'Некорректный ввод! <br />';
+	}
+	elseif(!emailFormat())
+	{
+		echo 'Проверьте правильность ввода EMAIL! <br />';
+	}
+	else
+	{
+		if(!mxConnect())
+		{
+			echo 'Невозможно установить соединение с MX-сервером! <br />';
+		}
+		else
+		{
+			echo checkEmailMX();
+		}
+	}	
+}
 
-	// if (!isset($_POST['name']) || empty($_POST['name']) || !isset($_POST['email']) || empty($_POST['email']) || !isset($_POST['phone']) || empty($_POST['phone']))
-	// {
-	// 	echo 'Заполнены не все обязательные поля';
-	// }
-	// else
-	// {
-	// 	if (filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) {
-	// 	    echo 'E-mail ', $_POST['email'] ,' указан верно. <br/>';
-	// 	}else
-	// 	{
-	// 		echo 'неверно! <br/>';
-	// 	}
-
-	// 	echo $_POST['name'] , '<br/>';
-	// 	echo $_POST['email'] , '<br/>';
-	// 	echo $_POST['phone'] , '<br/>';
-	// }
+run();
