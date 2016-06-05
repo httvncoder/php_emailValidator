@@ -20,21 +20,6 @@
 	}	
 </script> -->
 
-<?php   
-	// $mx = 'mail.gorodavto.com';
-	// $fp = @fsockopen($mx,25, $errno, $errstr, 2);
-	// $result = $fp ? true : false;
-	// print_r($result);
-	// 
-	// $smtp_host = "ssl://smtp.gmail.com";
-	// $smtp_port = 465;
-	// $socket = fsockopen($smtp_host, $smtp_port, $errno, $errstr, 5);
- //    if (!($socket = fsockopen($smtp_host, $smtp_port, $errno, $errstr, 5)))
- //    {
- //      echo "Error connecting to '$smtp_host' ($errno) ($errstr)";
- //    }
- //    else
- //    {
- //    	echo 'Yahoooo!';
- //    }	
+<?php 
+
 ?>
