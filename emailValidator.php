@@ -42,10 +42,27 @@ function mxConnect()
 	}
 	else
 	{
-		$mxConn = @fsockopen(checkEmailMX(),25, $errno, $errstr, 2);
-		return $mxConn ? true : false;
+		$mxConn = @fsockopen(checkEmailMX(),25, $errno, $errstr, 2);		
+		return $mxConn ? $mxConn : false;
 	}
 }
+
+/**
+ * [emailQuery description]
+ * @return [type] [description]
+ */
+function emailQuery()
+{
+	if(!mxConnect())
+	{
+		echo 'Невозможно установить соединение с MX-сервером! <br />';
+	}
+	else
+	{
+		echo checkEmailMX();
+	}
+}
+
 
 /**
  * [run description]
@@ -63,14 +80,7 @@ function run()
 	}
 	else
 	{
-		if(!mxConnect())
-		{
-			echo 'Невозможно установить соединение с MX-сервером! <br />';
-		}
-		else
-		{
-			echo checkEmailMX();
-		}
+		emailQuery();
 	}	
 }
 

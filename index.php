@@ -1,4 +1,6 @@
-
+<head>
+<meta charset="UTF-8">
+</head>
 
 <form action="emailValidator.php" method="post" target="emailValidatorResult" id="getAccessForm" >
 	<p><input type="text" name="name" placeholder="Ф.И.О.:" /></p>
@@ -8,8 +10,7 @@
 	<p><input type="submit" name="submit" value="Ввод" /> <input type="reset" value="Сброс" /></p>
 </form>
 
-<iframe name="emailValidatorResult">
-</iframe>
+<iframe name="emailValidatorResult"></iframe>
 
 
 <!-- <script type="text/javascript">
@@ -20,8 +21,20 @@
 </script> -->
 
 <?php   
-	// $mx = 'mail.gorodavt1o.com';
+	// $mx = 'mail.gorodavto.com';
 	// $fp = @fsockopen($mx,25, $errno, $errstr, 2);
 	// $result = $fp ? true : false;
 	// print_r($result);
+	// 
+	// $smtp_host = "ssl://smtp.gmail.com";
+	// $smtp_port = 465;
+	// $socket = fsockopen($smtp_host, $smtp_port, $errno, $errstr, 5);
+ //    if (!($socket = fsockopen($smtp_host, $smtp_port, $errno, $errstr, 5)))
+ //    {
+ //      echo "Error connecting to '$smtp_host' ($errno) ($errstr)";
+ //    }
+ //    else
+ //    {
+ //    	echo 'Yahoooo!';
+ //    }	
 ?>
