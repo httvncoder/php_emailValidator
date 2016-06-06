@@ -17,7 +17,15 @@
 	</head>
 
 <body>
-
+	<div class="header">
+		<?php require_once('/web/layouts/header.php'); ?>
+	</div>
+	<div class="col-md-3">
+		<?php require_once('/web/layouts/sidebar.php'); ?>
+	</div>
+	<div class="footer" id="footer">
+	
+	</div>
 </body>
 
 </html>

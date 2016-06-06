@@ -9,18 +9,37 @@
 
 <body>
 
-<form action="emailValidator.php" method="post" target="emailValidatorResult" id="getAccessForm" class="emailValidateForm">
-	<p><input type="text" name="name" placeholder="Ф.И.О.:" /></p>
-	<p><input type="tel" name="phone" placeholder="Тел.:" /></p>
-	<p><input type="email" name="email" placeholder="EMAIL:" /></p>
-	<!-- <p><input type="submit" name="submit" value="Ввод" onClick="processForm();" /> <input type="reset" value="Сброс" /></p> -->
-	<p>
+<form action="emailValidator.php" method="post" target="emailValidatorResult" id="getAccessForm" >
+
+	<div class="input-group input-small ">
+	  <span class="input-group-addon" id="sizing-addon2"><i class="fa fa-user"></i></span>
+	  <input type="text" name="name" class="form-control" placeholder="Ф.И.О.:" aria-describedby="sizing-addon2">
+	</div>
+	<br>
+
+	<div class="input-group input-small ">
+		  <span class="input-group-addon" id="sizing-addon2"><i class="fa fa-phone"></i></span>
+		  <input type="tel" name="phone" class="form-control" placeholder="Тел.:" aria-describedby="sizing-addon2">
+		</div>
+		<br>	
+
+	<div class="input-group input-small ">
+		  <span class="input-group-addon" id="sizing-addon2"><i class="fa fa-inbox"></i></span>
+		  <input type="email" name="email" class="form-control" placeholder="EMAIL:" aria-describedby="sizing-addon2">
+		</div>
+		<br>	
+	<p class="button-left">
 		<button type="submit" class="btn btn-success">
-	    	<i class="fa fa-plus"></i> Ввод
+	    	<i class="fa fa-check"></i> Ввод
 		</button>
-		<!-- <input type="submit" name="submit" value="<i class='fa fa-plus'></i>Ввод" class="btn btn-success" />  -->
-		<input type="reset" value="Сброс" class="btn btn-primary btn-sm" />
+		<button type="reset" class="btn btn-primary btn-sm">
+	    	<i class="fa fa-remove"></i> Сброс
+		</button>
 	</p>
+
+	<!-- <p><input type="tel" name="phone" placeholder="Тел.:" /></p> -->
+	<!-- <p><input type="email" name="email" placeholder="EMAIL:" /></p> -->
+	<!-- <p><input type="submit" name="submit" value="Ввод" onClick="processForm();" /> <input type="reset" value="Сброс" /></p> -->
 </form>
 
 <div class="embed-responsive embed-responsive-4by3">

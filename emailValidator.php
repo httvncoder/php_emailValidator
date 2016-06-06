@@ -76,14 +76,12 @@ function mxConnect()
 			if($fp)
 			{
 				$result[0] = trim(fgets($fp));
-    			$result[0] = substr($result[0], 0, 3); // 220
+    			$result[0] = substr($result[0], 0, 3);
 
-				// fwrite($fp, "HELO alians-kmv.ru" . "\r\n");
 				fwrite($fp, "HELO " . $app_url . "\r\n");
     			$result[1] = trim(fgets($fp));
     			$result[1] = substr($result[1], 0, 3);
 
-				// fwrite($fp, "MAIL FROM: <it.service@alians-kmv.ru> \r\n");
 				fwrite($fp, "MAIL FROM: <" . $app_email . "> \r\n");
     			$result[2] = trim(fgets($fp));
     			$result[2] = substr($result[2], 0, 3);
@@ -97,10 +95,10 @@ function mxConnect()
     			$result[4] = substr($result[4], 0, 3);
 
 				fclose($fp);
-
-				echo '<pre>';
-				print_r($result);
-				echo '</pre>';
+				// echo substr ($result[3],0,1);
+				// echo '<pre>';
+				// print_r($result);
+				// echo '</pre>';
 
 				break;
 			}
@@ -125,7 +123,19 @@ function emailQuery()
 	}
 	else
 	{
-		print_r(mxConnect());
+		if(substr(mxConnect()[3], 0, 1) == 2)
+		{
+			echo 'Email существует!';
+		}
+		elseif(substr(mxConnect()[3], 0, 1) == 4)
+		{
+			echo 'Сервер временно отклонил попытку соединения. Повторите попытку позже!';
+		}
+		elseif(substr(mxConnect()[3], 0, 1) == 5)
+		{
+			echo 'Email не существует!';
+		}
+		// print_r(mxConnect()[3]);
 	}
 }
 
@@ -140,4 +150,4 @@ function run()
 }
 
 run();
-printf('Время выполнения: %.1F сек.', (microtime(true) - $startExecute));
+printf('<br /> Время выполнения: %.1F сек.', (microtime(true) - $startExecute));
