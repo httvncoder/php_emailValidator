@@ -2,6 +2,9 @@
 
 require_once('config.inc.php');
 $startExecute = microtime(true); 
+// error_reporting(E_ERROR);
+error_reporting (E_ERROR || E_WARNING || E_PARSE || E_NOTICE);
+define('DEBUG',false);
 
 /**
  * [requiredFields description]

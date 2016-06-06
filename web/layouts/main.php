@@ -14,17 +14,19 @@
 
 		<script src="/js/jQuery/1.12.0/jquery.min.js"></script>
 	    <script src="/js/bootstrap/3.3.5/bootstrap.min.js"></script>
+
+	    <script src="/js/jquery.maskedinput.min.js"></script>
 	</head>
 
 <body>
 	<div class="header">
 		<?php require_once('/web/layouts/header.php'); ?>
 	</div>
-	<div class="col-md-3">
-		<?php require_once('/web/layouts/sidebar.php'); ?>
-	</div>
+	<!-- <div class="col-md-3"> -->
+		<?php // require_once('/web/layouts/sidebar.php'); ?>
+	<!-- </div> -->
 	<div class="footer" id="footer">
-	
+
 	</div>
 </body>
 
