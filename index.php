@@ -13,7 +13,7 @@
 jQuery(function($){
    $("#phone").mask("+7 (999) 999-99-99");
 });
-</script>
+</script> 
 
 <!-- <div class="col-md-9"> -->
 <div class="col-md-6 col-md-offset-3">
