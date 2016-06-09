@@ -4,16 +4,12 @@
 	<head>
 		<meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<?php require_once('/web/layouts/main.php'); ?>
+		<?php require_once('web/layouts/main.php'); ?>
 	</head>
 
 <body>
 
-<script type="text/javascript">
-jQuery(function($){
-   $("#phone").mask("+7 (999) 999-99-99");
-});
-</script> 
+<script type="text/javascript" src="phoneMask.js"></script>
 
 <!-- <div class="col-md-9"> -->
 <div class="col-md-6 col-md-offset-3">
@@ -21,7 +17,7 @@ jQuery(function($){
 	<div class="panel panel-default">
 	  	<div class="panel-heading">Данные для предоставления доступа</div>
 	  	<div class="panel-body">
-			<form action="emailValidator.php" method="post" target="emailValidatorResult" id="getAccessForm" >
+			<form action="emailValidator.php" method="post" target="emailValidatorResult" id="getAccessForm" >	
 
 				<div class="input-group input-small ">
 				  <span class="input-group-addon" id="sizing-addon2"><i class="fa fa-user"></i></span>
@@ -58,13 +54,13 @@ jQuery(function($){
 
 <!-- <div class="col-md-6 col-md-offset-3"> -->
 
-<div class="panel panel-default">
-	<div class="panel-body">
+<!-- <div class="panel panel-default"> -->
+	<!-- <div class="panel-body"> -->
 		<div class="embed-responsive embed-responsive-16by9">
 		  <iframe name="emailValidatorResult" class="embed-responsive-item"></iframe>
 		</div>
-	</div>
-</div>
+	<!-- </div> -->
+<!-- </div> -->
 
 
 <!-- </div> -->

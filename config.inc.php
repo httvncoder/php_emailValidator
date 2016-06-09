@@ -1,5 +1,5 @@
 <?php
 
 $app_name  = 'EMAIL Validation';
-$app_email = 'info@example.org';
-$app_url   = 'example.org';
+$app_email = 'inafo@examp345le45123.org';
+$app_url   = 'example.com';

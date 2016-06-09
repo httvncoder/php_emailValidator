@@ -1,10 +1,66 @@
 <?php
 
 require_once('config.inc.php');
-$startExecute = microtime(true); 
-// error_reporting(E_ERROR);
+
 error_reporting (E_ERROR || E_WARNING || E_PARSE || E_NOTICE);
+
 define('DEBUG',false);
+define('startExecute', microtime(true));
+
+/**
+ * Description
+ * @param type $notificationLevel - Уровень сообщения
+ * @param type $notificationText - Текст сообщения
+ * @return type text
+ */
+function displayNotifications($notificationLevel, $notificationText)
+{
+	switch ($notificationLevel) {
+		case 0:
+			echo '<div class="alert alert-danger">Сообщение: ';
+			break;
+		case 1:
+			echo 'Предупреждение:';
+			break;
+		case 2:
+			echo 'Ошибка:';
+			break;
+		case 3:
+			echo 'Критическая ошибка:';
+			break;
+		case 4:
+			echo 'Исключение:';
+			break;
+		
+		default:
+			echo '';
+			break;
+	}
+
+	echo $notificationText . "<br />\n</div>";
+}
+
+/**
+ * Description
+ * Выводит на экран время исполнения скрипта
+ * @return type time
+ */
+function timeExecution()
+{
+	echo '<br /> Время выполнения: ~ ' . round((microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]), 1) . ' сек';
+}
+
+/**
+ * Description
+ * @param type $proceedArray 
+ * @return type
+ */
+function d($proceedArray)
+{
+	echo '<pre>';
+	var_dump($proceedArray);
+	echo '</pre>';
+}
 
 /**
  * [requiredFields description]
@@ -23,7 +79,9 @@ function emailFormat()
 {
 	if(!requiredFields())
 	{
-		throw new Exception("Некорректный ввод", 1);
+		displayNotifications(0, 'Некорректный ввод');
+		timeExecution();
+		die();
 	}
 	else
 	{
@@ -38,8 +96,10 @@ function emailFormat()
 function checkEmailMX()
 {
 	if(!emailFormat())
-	{
-		throw new Exception("Проверьте правильность ввода EMAILt", 1);		
+	{	
+		displayNotifications(0, 'Проверьте правильность ввода EMAIL');	
+		timeExecution();
+		die();
 	}
 	else
 	{
@@ -70,7 +130,9 @@ function mxConnect()
 
 	if(!checkEmailMX())
 	{
-		throw new Exception("Домен ящика не обнаружен в DNS", 1);		
+		displayNotifications(0, 'Домен ящика не обнаружен в DNS');		
+		timeExecution();
+		die();
 	}
 	else
 	{
@@ -79,35 +141,33 @@ function mxConnect()
 			if($fp)
 			{
 				$result[0] = trim(fgets($fp));
-    			$result[0] = substr($result[0], 0, 3);
+    			// $result[0] = substr($result[0], 0, 3);
 
 				fwrite($fp, "HELO " . $app_url . "\r\n");
     			$result[1] = trim(fgets($fp));
-    			$result[1] = substr($result[1], 0, 3);
+    			// $result[1] = substr($result[1], 0, 3);
 
 				fwrite($fp, "MAIL FROM: <" . $app_email . "> \r\n");
     			$result[2] = trim(fgets($fp));
-    			$result[2] = substr($result[2], 0, 3);
+    			// $result[2] = substr($result[2], 0, 3);
 
 				fwrite($fp, "RCPT TO: <" . $_POST['email'] . "> \r\n");
     			$result[3] = trim(fgets($fp));
-    			$result[3] = substr($result[3], 0, 3);
+    			// $result[3] = substr($result[3], 0, 3);
 
 				fwrite($fp, "QUIT" . "\r\n");
     			$result[4] = trim(fgets($fp));
-    			$result[4] = substr($result[4], 0, 3);
+    			// $result[4] = substr($result[4], 0, 3);
 
 				fclose($fp);
-				// echo substr ($result[3],0,1);
-				// echo '<pre>';
-				// print_r($result);
-				// echo '</pre>';
 
 				break;
 			}
 			else
 			{
-				throw new Exception("Невозможно подключиться к MX-серверу. Недоступен MX-сервер или 25-й порт", 1);				
+				displayNotifications(0, 'Невозможно подключиться к MX-серверу. Недоступен MX-сервер или 25-й порт');
+				timeExecution();
+				die();					
 			}
 		}
 		return $fp ? $result : false;
@@ -122,26 +182,31 @@ function emailQuery()
 {
 	if(!mxConnect())
 	{
-		throw new Exception("Невозможно установить соединение с MX-сервером", 0);		
+		displayNotifications(0, 'Невозможно установить соедининие с MX-сервером');
+		timeExecution();
+		die();
 	}
 	else
 	{
 		if(substr(mxConnect()[3], 0, 1) == 2)
 		{
-			echo 'Email существует!';
+			displayNotifications(0, 'Email существует!');
+			timeExecution();
 		}
 		elseif(substr(mxConnect()[3], 0, 1) == 4)
 		{
-			echo 'Сервер временно отклонил попытку соединения. Повторите попытку позже!';
+			displayNotifications(0, 'Сервер временно отклонил попытку соединения. Повторите попытку позже!');
+			displayNotifications(5, 'Причина: ');
+			echo mxConnect()[3];
+			timeExecution();
 		}
 		elseif(substr(mxConnect()[3], 0, 1) == 5)
 		{
-			echo 'Email не существует!';
+			displayNotifications(0, 'Email не существует!');
+			timeExecution();
 		}
-		// print_r(mxConnect()[3]);
 	}
 }
-
 
 /**
  * [run description]
@@ -149,8 +214,7 @@ function emailQuery()
  */
 function run()
 {
-	emailQuery();	
+	emailQuery();		
 }
 
 run();
-printf('<br /> Время выполнения: %.1F сек.', (microtime(true) - $startExecute));
