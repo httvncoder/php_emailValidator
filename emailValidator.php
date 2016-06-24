@@ -191,6 +191,7 @@ function emailQuery()
 		if(substr(mxConnect()[3], 0, 1) == 2)
 		{
 			displayNotifications(0, 'Email существует!');
+			// echo '{"result":"Message has been sent"}';	
 			timeExecution();
 		}
 		elseif(substr(mxConnect()[3], 0, 1) == 4)
