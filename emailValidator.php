@@ -9,6 +9,7 @@ define('startExecute', microtime(true));
 
 /**
  * Description
+ * Возвращает сообщения в формате - уровень сообщения, текст сообщения
  * @param type $notificationLevel - Уровень сообщения
  * @param type $notificationText - Текст сообщения
  * @return type text
@@ -17,19 +18,22 @@ function displayNotifications($notificationLevel, $notificationText)
 {
 	switch ($notificationLevel) {
 		case 0:
-			echo '<div class="alert alert-danger">Сообщение: ';
+			echo '<div class="alert alert-success text-center"><b>Сообщение: ';
 			break;
 		case 1:
-			echo 'Предупреждение:';
+			echo '<div class="alert alert-info text-center"><b>Предупреждение: ';
 			break;
 		case 2:
-			echo 'Ошибка:';
+			echo '<div class="alert alert-danger"><b>Ошибка: ';
 			break;
 		case 3:
-			echo 'Критическая ошибка:';
+			echo '<b>Критическая ошибка:';
 			break;
 		case 4:
-			echo 'Исключение:';
+			echo '<b>Исключение:';
+			break;
+		case 5:
+			echo '<div class="alert alert-info"><b>Информация: ';
 			break;
 		
 		default:
@@ -37,7 +41,7 @@ function displayNotifications($notificationLevel, $notificationText)
 			break;
 	}
 
-	echo $notificationText . "<br />\n</div>";
+	echo $notificationText . "</b><br />\n</div>";
 }
 
 /**
@@ -47,11 +51,12 @@ function displayNotifications($notificationLevel, $notificationText)
  */
 function timeExecution()
 {
-	echo '<br /> Время выполнения: ~ ' . round((microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]), 1) . ' сек';
+	return 'Время выполнения: ~ ' . round((microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]), 1) . ' сек';
 }
 
 /**
  * Description
+ * Выводит на экран var_dump указанного массива
  * @param type $proceedArray 
  * @return type
  */
@@ -63,23 +68,26 @@ function d($proceedArray)
 }
 
 /**
+ * Description
+ * Если не заполнено поле email возвращает false
  * [requiredFields description]
  * @return [type] [description]
  */
 function requiredFields()
 {
-	return (!isset($_POST['name']) || empty($_POST['name']) || !isset($_POST['email']) || empty($_POST['email']) || !isset($_POST['phone']) || empty($_POST['phone'])) ? false : true;
+	return (!isset($_POST['email']) || empty($_POST['email'])) ? false : true;
 }
 
 /**
  * [emailFormat description]
+ * Если функция requiredFields() истинна - проверяет правильность ввода, иначе - выводит сообщение об ошибке
  * @return [type] [description]
  */
 function emailFormat()
 {
 	if(!requiredFields())
 	{
-		displayNotifications(0, 'Некорректный ввод');
+		displayNotifications(1, 'Необходимо заполнить поле EMAIL');
 		timeExecution();
 		die();
 	}
@@ -91,13 +99,14 @@ function emailFormat()
 
 /**
  * [checkEmailMX description]
+ * Если функция emailFormat() ложна - выводит сообщение об ошибке, если нет отделяет доменную часть переданного email-адреса, производит попытку разрешить доменное имя. Возвращает доменное имя или false
  * @return [type] [description]
  */
 function checkEmailMX()
 {
 	if(!emailFormat())
 	{	
-		displayNotifications(0, 'Проверьте правильность ввода EMAIL');	
+		displayNotifications(2, 'Проверьте правильность ввода EMAIL');	
 		timeExecution();
 		die();
 	}
@@ -130,7 +139,7 @@ function mxConnect()
 
 	if(!checkEmailMX())
 	{
-		displayNotifications(0, 'Домен ящика не обнаружен в DNS');		
+		displayNotifications(2, 'Домен ящика не обнаружен в DNS');		
 		timeExecution();
 		die();
 	}
@@ -165,7 +174,7 @@ function mxConnect()
 			}
 			else
 			{
-				displayNotifications(0, 'Невозможно подключиться к MX-серверу. Недоступен MX-сервер или 25-й порт');
+				displayNotifications(2, 'Невозможно подключиться к MX-серверу. Недоступен MX-сервер или 25-й порт');
 				timeExecution();
 				die();					
 			}
@@ -182,7 +191,7 @@ function emailQuery()
 {
 	if(!mxConnect())
 	{
-		displayNotifications(0, 'Невозможно установить соедининие с MX-сервером');
+		displayNotifications(2, 'Невозможно установить соедининие с MX-сервером');
 		timeExecution();
 		die();
 	}
@@ -190,16 +199,12 @@ function emailQuery()
 	{
 		if(substr(mxConnect()[3], 0, 1) == 2)
 		{
-			displayNotifications(0, 'Email существует!');
-			// echo '{"result":"Message has been sent"}';	
-			timeExecution();
+			displayNotifications(0, 'Email существует! '. timeExecution());
 		}
 		elseif(substr(mxConnect()[3], 0, 1) == 4)
 		{
-			displayNotifications(0, 'Сервер временно отклонил попытку соединения. Повторите попытку позже!');
-			displayNotifications(5, 'Причина: ');
-			echo mxConnect()[3];
-			timeExecution();
+			displayNotifications(2, 'Сервер временно отклонил попытку соединения. Повторите попытку позже!');
+			displayNotifications(5, mxConnect()[3] . '<br/>' . timeExecution());
 		}
 		elseif(substr(mxConnect()[3], 0, 1) == 5)
 		{
