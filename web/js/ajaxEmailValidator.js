@@ -15,7 +15,7 @@ $(document).ready(function() {
 			var data = form.serialize();
 			$.ajax({ 
 			   	type: 'POST', 
-			   	url: 'emailValidator.php',
+			   	url: '/validators/emailValidator.php',
 			   	data: data,
 		       	beforeSend: function() {
 		       	     $("#checkPanel").addClass("loading");

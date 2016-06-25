@@ -1,71 +1,13 @@
 <?php
 
-require_once('config.inc.php');
+require_once(dirname(dirname(__FILE__)).'/config/config.inc.php');
+require_once(dirname(dirname(__FILE__)).'/helpers/displayNotifications.php');
+require_once(dirname(dirname(__FILE__)).'/helpers/timeExecution.php');
+require_once(dirname(dirname(__FILE__)).'/helpers/varDump.php');
 
 error_reporting (E_ERROR || E_WARNING || E_PARSE || E_NOTICE);
 
 define('DEBUG',false);
-define('startExecute', microtime(true));
-
-/**
- * Description
- * Возвращает сообщения в формате - уровень сообщения, текст сообщения
- * @param type $notificationLevel - Уровень сообщения
- * @param type $notificationText - Текст сообщения
- * @return type text
- */
-function displayNotifications($notificationLevel, $notificationText)
-{
-	switch ($notificationLevel) {
-		case 0:
-			echo '<div class="alert alert-success text-center"><b>Сообщение: ';
-			break;
-		case 1:
-			echo '<div class="alert alert-info text-center"><b>Предупреждение: ';
-			break;
-		case 2:
-			echo '<div class="alert alert-danger"><b>Ошибка: ';
-			break;
-		case 3:
-			echo '<b>Критическая ошибка:';
-			break;
-		case 4:
-			echo '<b>Исключение:';
-			break;
-		case 5:
-			echo '<div class="alert alert-info"><b>Информация: ';
-			break;
-		
-		default:
-			echo '';
-			break;
-	}
-
-	echo $notificationText . "</b><br />\n</div>";
-}
-
-/**
- * Description
- * Выводит на экран время исполнения скрипта
- * @return type time
- */
-function timeExecution()
-{
-	return 'Время выполнения: ~ ' . round((microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]), 1) . ' сек';
-}
-
-/**
- * Description
- * Выводит на экран var_dump указанного массива
- * @param type $proceedArray 
- * @return type
- */
-function d($proceedArray)
-{
-	echo '<pre>';
-	var_dump($proceedArray);
-	echo '</pre>';
-}
 
 /**
  * Description
