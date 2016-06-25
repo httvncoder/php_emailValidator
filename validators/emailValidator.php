@@ -2,23 +2,23 @@
 
 require_once(dirname(dirname(__FILE__)).'/config/config.inc.php');
 require_once(dirname(dirname(__FILE__)).'/helpers/displayNotifications.php');
-require_once(dirname(dirname(__FILE__)).'/helpers/timeExecution.php');
+require_once(dirname(dirname(__FILE__)).'/helpers/counters.php');
 require_once(dirname(dirname(__FILE__)).'/helpers/varDump.php');
+require_once(dirname(dirname(__FILE__)).'/helpers/requiredFields.php');
 
 error_reporting (E_ERROR || E_WARNING || E_PARSE || E_NOTICE);
 
 define('DEBUG',false);
 
-/**
- * Description
- * Если не заполнено поле email возвращает false
- * [requiredFields description]
- * @return [type] [description]
- */
-function requiredFields()
-{
-	return (!isset($_POST['email']) || empty($_POST['email'])) ? false : true;
-}
+$notrifications = new notifications;
+$counters = new counters;
+$requiredFields = new requiredFields;
+
+
+// function requiredFields()
+// {
+// 	return (!isset($_POST['email']) || empty($_POST['email'])) ? false : true;
+// }
 
 /**
  * [emailFormat description]
@@ -27,15 +27,18 @@ function requiredFields()
  */
 function emailFormat()
 {
-	if(!requiredFields())
+	global $notrifications;
+	global $counters;
+	global $requiredFields;
+
+	if($requiredFields->getFields($_POST['email']))
 	{
-		displayNotifications(1, 'Необходимо заполнить поле EMAIL');
-		timeExecution();
-		die();
+		return (!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) ? false : true;
 	}
 	else
 	{
-		return (!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) ? false : true;		
+		echo $notrifications->displayNotifications(1, 'Необходимо заполнить поле EMAIL. ' . $counters->timeExecution());
+		die();	
 	}	
 }
 
@@ -46,10 +49,12 @@ function emailFormat()
  */
 function checkEmailMX()
 {
+	global $notrifications;
+	global $counters;
+
 	if(!emailFormat())
 	{	
-		displayNotifications(2, 'Проверьте правильность ввода EMAIL');	
-		timeExecution();
+		echo $notrifications->displayNotifications(2, 'Проверьте правильность ввода EMAIL ' . $counters->timeExecution());
 		die();
 	}
 	else
@@ -78,11 +83,12 @@ function mxConnect()
 {
 	global $app_url;
 	global $app_email;
+	global $notrifications;
+	global $counters;
 
 	if(!checkEmailMX())
 	{
-		displayNotifications(2, 'Домен ящика не обнаружен в DNS');		
-		timeExecution();
+		echo $notrifications->displayNotifications(2, 'Домен ящика не обнаружен в DNS ' . $counters->timeExecution());		
 		die();
 	}
 	else
@@ -116,8 +122,7 @@ function mxConnect()
 			}
 			else
 			{
-				displayNotifications(2, 'Невозможно подключиться к MX-серверу. Недоступен MX-сервер или 25-й порт');
-				timeExecution();
+				echo $notrifications->displayNotifications(2, 'Невозможно подключиться к MX-серверу. Недоступен MX-сервер или 25-й порт. ' . $counters->timeExecution());
 				die();					
 			}
 		}
@@ -131,27 +136,28 @@ function mxConnect()
  */
 function emailQuery()
 {
+	global $notrifications;
+	global $counters;
+
 	if(!mxConnect())
 	{
-		displayNotifications(2, 'Невозможно установить соедининие с MX-сервером');
-		timeExecution();
+		echo $notrifications->displayNotifications(2, 'Невозможно установить соедининие с MX-сервером ' . $counters->timeExecution());
 		die();
 	}
 	else
 	{
 		if(substr(mxConnect()[3], 0, 1) == 2)
 		{
-			displayNotifications(0, 'Email существует! '. timeExecution());
+			echo $notrifications->displayNotifications(0, 'Email существует! '. $counters->timeExecution());
 		}
 		elseif(substr(mxConnect()[3], 0, 1) == 4)
 		{
-			displayNotifications(2, 'Сервер временно отклонил попытку соединения. Повторите попытку позже!');
-			displayNotifications(5, mxConnect()[3] . '<br/>' . timeExecution());
+			echo $notrifications->displayNotifications(2, 'Сервер временно отклонил попытку соединения. Повторите попытку позже!');
+			echo $notrifications->displayNotifications(5, mxConnect()[3] . '<br/>' . $counters->timeExecution());
 		}
 		elseif(substr(mxConnect()[3], 0, 1) == 5)
 		{
-			displayNotifications(0, 'Email не существует!');
-			timeExecution();
+			echo $notrifications->displayNotifications(2, 'Email не существует! ' . $counters->timeExecution());
 		}
 	}
 }
