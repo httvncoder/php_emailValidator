@@ -1,10 +1,26 @@
 <?php
 
+// require_once(dirname(dirname(__FILE__)).'/helpers/varDump.php');
+// require_once(dirname(__FILE__).'/counters.php');
+// require_once(dirname(__FILE__).'/displayNotifications.php');
+
 /**
 * 
 */
 class requiredFields
 {
+	/**
+	 * Description
+	 * @return type
+	 */
+	public function clearSessionElements()
+	{
+		$elementsArray = func_get_args();
+		foreach ($elementsArray as $k => $v) {
+			unset($_SESSION[$v]);
+		}
+	}
+
 	/**
 	 * [requireFieldsValidator description]
 	 * если отправлен $_POST запрос - очищает сессию от возможно присвоенных ранее значений
@@ -16,37 +32,43 @@ class requiredFields
 	 * если $_POST запрос не был отправлен - очищает и уничтожает сессию
 	 * @return [type] [description]
 	 */
-	public function requireFieldsValidator()
+	public function requiredFieldsValidator()
 	{
+		$elementsArray = func_get_args();
+		call_user_func_array(array($this, 'clearSessionElements'), $elementsArray);
+		
 		if($_SERVER['REQUEST_METHOD'] === 'POST')
 		{
-			session_unset();
-			$validateFileds = array_intersect_key($_POST, array_flip(func_get_args()));
+			$validateFileds = array_intersect_key($_POST, array_flip($elementsArray));
 			foreach ($validateFileds as $k => $v) {
-				$validationErrorText[] = !empty($v) ? true : $_SESSION[$k] = $k . ' - обязательный аттрибут <br/>';
+				// $validationErrorText[] = !empty($v) ? true : $_SESSION[$k] = $k . ' - обязательный аттрибут <br/>';
+				if(empty($v))
+				{
+					$_SESSION[$k] = $k . ' - обязательный аттрибут <br/>';
+				}				
 			}
 		}
-		else
-		{
-			session_unset();
-			session_destroy();
-		}
 		
+		return !empty($_SESSION) ? false : true;		
 	}
 
+	/**
+	 * Description
+	 * @param type $fieldName 
+	 * @return type boolean
+	 */
 	public function displayError($fieldName)
 	{
 		return (isset($_SESSION[$fieldName]) && !empty($_SESSION[$fieldName])) ? $_SESSION[$fieldName] : false;
 	}
 
-
-
-
+	/**
+	 * Description
+	 * @param type $fieldName 
+	 * @return type
+	 */
+	public function currentFormFieldValue($fieldName)
+	{
+		return (isset($_POST[$fieldName]) && !empty($_POST[$fieldName])) ? $_POST[$fieldName] : false;
+	}
 }
-
-
-// $search_array = array('first' => 1, 'second' => 4);
-// if (array_key_exists('first', $search_array)) {
-//     echo "Массив содержит элемент 'first'.";
-// }
-
