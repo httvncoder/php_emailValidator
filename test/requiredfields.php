@@ -1,13 +1,13 @@
 <?php
 
-// require_once(dirname(dirname(__FILE__)).'/helpers/varDump.php');
+require_once(dirname(dirname(__FILE__)).'/helpers/varDump.php');
 // require_once(dirname(__FILE__).'/counters.php');
 // require_once(dirname(__FILE__).'/displayNotifications.php');
 
 /**
 * 
 */
-class requiredFields
+class formValidator
 {
 	/**
 	 * Description
@@ -22,34 +22,48 @@ class requiredFields
 	}
 
 	/**
-	 * [requireFieldsValidator description]
-	 * если отправлен $_POST запрос - очищает сессию от возможно присвоенных ранее значений
-	 * получает массив переданных функции аргументов, в котором меняет местами ключи со значениями
-	 * вычисляет пересечение полученного массива с переданным массивом $_POST по ключам записывает в новый массив $_POST
-	 * проверяет значения элементов, полученного массива $_POST
-	 * если найдены пустые значения - записывает в сессию переменную вида $_SESSION[$k], где $k - ключ массива $_POST, равный имени передаваемого поля формы
-	 * если пустые значения не найдены - возвращает true
-	 * если $_POST запрос не был отправлен - очищает и уничтожает сессию
+	 * [requiredFieldsValidator description]
 	 * @return [type] [description]
 	 */
 	public function requiredFieldsValidator()
 	{
 		$elementsArray = func_get_args();
 		call_user_func_array(array($this, 'clearSessionElements'), $elementsArray);
+		$inverseElementsArray = array_flip($elementsArray);
 		
 		if($_SERVER['REQUEST_METHOD'] === 'POST')
 		{
-			$validateFileds = array_intersect_key($_POST, array_flip($elementsArray));
+			$validateFileds = array_intersect_key($_POST, $inverseElementsArray);
 			foreach ($validateFileds as $k => $v) {
-				// $validationErrorText[] = !empty($v) ? true : $_SESSION[$k] = $k . ' - обязательный аттрибут <br/>';
 				if(empty($v))
 				{
-					$_SESSION[$k] = $k . ' - обязательный аттрибут <br/>';
+					$_SESSION[$k] = '<p class="text-danger text-center">' . $k . ' - обязательный аттрибут <br/></p>';
 				}				
 			}
-		}
-		
-		return !empty($_SESSION) ? false : true;		
+		}		
+
+		$compareArgsSession = array_diff_assoc($_SESSION, $inverseElementsArray);
+
+		!empty($compareArgsSession) ? call_user_func_array(array($this, 'summaryError'), $elementsArray) : false;
+		// d($compareArgsSession);
+
+		return !empty($compareArgsSession) ? false : true;		
+	}
+
+	/**
+	 * [summaryError description]
+	 * @param  [type] $fieldName [description]
+	 * @return [type]            [description]
+	 */
+	public function summaryError()
+	{
+		$elementsArray = func_get_args();
+		$inverseElementsArray = array_flip($elementsArray);
+		$compareArgsSession = array_diff_assoc($_SESSION, $inverseElementsArray);
+
+		$errorMsg = implode(' ', $compareArgsSession);
+
+		return !empty($errorMsg) ? '<div class="alert alert-danger text-center"><b>' . $errorMsg . '</b></div>' : false;
 	}
 
 	/**

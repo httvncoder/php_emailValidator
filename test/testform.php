@@ -14,8 +14,9 @@
 			// header( 'Cache-Control: no-store, no-cache, must-revalidate' ); 
 			// header( 'Cache-Control: post-check=0, pre-check=0', false ); 
 			// header( 'Pragma: no-cache' ); 
-			$requiredFields = new requiredFields;
-			$requiredFields->requiredFieldsValidator('phone', 'email');
+			$formValidator = new formValidator;
+			$formValidator->requiredFieldsValidator('phone', 'email');
+			// echo $formValidator->summaryError();
 		?>
 	</head>
 
@@ -23,22 +24,26 @@
 <body>
 
 	<form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post" id="requiredfields" style="width: 60%; margin: 0 auto;">
+		
+		<?php $formValidator = new formValidator; ?>
+		<?php $formValidator->requiredFieldsValidator('phone', 'email'); ?>
+		<?php echo $formValidator->summaryError(); ?>
 
-	    <input type="text" name="fullname" class="form-control" placeholder="fullname:" value="<?php echo $requiredFields->currentFormFieldValue('fullname'); ?>">
+	    <input type="text" name="fullname" class="form-control" placeholder="fullname:" value="<?php echo $formValidator->currentFormFieldValue('fullname'); ?>">
 
-	    	<?php echo $requiredFields->displayError('fullname'); ?>
+	    	<?php echo $formValidator->displayError('fullname'); ?>
 	    
 	    <br/>
 
-	    <input type="text" name="phone" class="form-control" placeholder="phone:" value="<?php echo $requiredFields->currentFormFieldValue('phone'); ?>">
+	    <input type="text" name="phone" class="form-control" placeholder="phone:" value="<?php echo $formValidator->currentFormFieldValue('phone'); ?>">
 	    
-	    	<?php echo $requiredFields->displayError('phone'); ?>
+	    	<?php echo $formValidator->displayError('phone'); ?>
 	    
 	    <br/>
 	    
-	    <input type="text" name="email" class="form-control" placeholder="email:" value="<?php echo $requiredFields->currentFormFieldValue('email'); ?>">
+	    <input type="text" name="email" class="form-control" placeholder="email:" value="<?php echo $formValidator->currentFormFieldValue('email'); ?>">
 	    
-	    	<?php echo $requiredFields->displayError('email'); ?>
+	    	<?php echo $formValidator->displayError('email'); ?>
 	    
 	    <br/>
 
