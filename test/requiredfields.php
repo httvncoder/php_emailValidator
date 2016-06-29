@@ -35,7 +35,7 @@ class formValidator
 		{
 			$validateFileds = array_intersect_key($_POST, $inverseElementsArray);
 			foreach ($validateFileds as $k => $v) {
-				if(empty($v))
+				if(empty(trim($v)))
 				{
 					$_SESSION[$k] = '<p class="text-danger text-center">' . $k . ' - обязательный аттрибут <br/></p>';
 				}				

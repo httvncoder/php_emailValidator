@@ -14,8 +14,8 @@
 			// header( 'Cache-Control: no-store, no-cache, must-revalidate' ); 
 			// header( 'Cache-Control: post-check=0, pre-check=0', false ); 
 			// header( 'Pragma: no-cache' ); 
-			$formValidator = new formValidator;
-			$formValidator->requiredFieldsValidator('phone', 'email');
+			// $formValidator = new formValidator;
+			// $formValidator->requiredFieldsValidator('fullname', 'email');
 			// echo $formValidator->summaryError();
 		?>
 	</head>
@@ -26,7 +26,7 @@
 	<form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post" id="requiredfields" style="width: 60%; margin: 0 auto;">
 		
 		<?php $formValidator = new formValidator; ?>
-		<?php $formValidator->requiredFieldsValidator('phone', 'email'); ?>
+		<?php $formValidator->requiredFieldsValidator('fullname', 'email'); ?>
 		<?php echo $formValidator->summaryError(); ?>
 
 	    <input type="text" name="fullname" class="form-control" placeholder="fullname:" value="<?php echo $formValidator->currentFormFieldValue('fullname'); ?>">
