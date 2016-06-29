@@ -5,13 +5,23 @@ require_once(dirname(dirname(__FILE__)).'/helpers/varDump.php');
 // require_once(dirname(__FILE__).'/displayNotifications.php');
 
 /**
-* 
-*/
+ * 
+ */
 class formValidator
 {
 	/**
-	 * Description
-	 * @return type
+	 * [attributeLabels description]
+	 * @return [type] [description]
+	 */
+	public function attributeLabels($attributes)
+	{
+		return $attributes;
+		d($attributes);
+	}
+
+	/**
+	 * [clearSessionElements description]
+	 * @return [type] [description]
 	 */
 	public function clearSessionElements()
 	{
@@ -38,6 +48,7 @@ class formValidator
 				if(empty(trim($v)))
 				{
 					$_SESSION[$k] = '<p class="text-danger text-center">' . $k . ' - обязательный аттрибут <br/></p>';
+					// $_SESSION[$k] = '<p class="text-danger text-center">' . $this->getAttributeLabel($valueAttributes, $k) . ' - обязательный аттрибут <br/></p>';
 				}				
 			}
 		}		
@@ -67,9 +78,9 @@ class formValidator
 	}
 
 	/**
-	 * Description
-	 * @param type $fieldName 
-	 * @return type boolean
+	 * [displayError description]
+	 * @param  [type] $fieldName [description]
+	 * @return [type]            [description]
 	 */
 	public function displayError($fieldName)
 	{
@@ -77,12 +88,23 @@ class formValidator
 	}
 
 	/**
-	 * Description
-	 * @param type $fieldName 
-	 * @return type
+	 * [currentFormFieldValue description]
+	 * @param  [type] $fieldName [description]
+	 * @return [type]            [description]
 	 */
 	public function currentFormFieldValue($fieldName)
 	{
 		return (isset($_POST[$fieldName]) && !empty($_POST[$fieldName])) ? $_POST[$fieldName] : false;
+	}
+
+	/**
+	 * [getAttributeLabel description]
+	 * @param  [type] $attributes [description]
+	 * @param  [type] $label      [description]
+	 * @return [type]             [description]
+	 */
+	public function getAttributeLabel($attributes, $label)
+	{
+		return array_key_exists($label, $attributes) ? $attributes[$label] : $label;
 	}
 }

@@ -25,23 +25,32 @@
 
 	<form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post" id="requiredfields" style="width: 60%; margin: 0 auto;">
 		
-		<?php $formValidator = new formValidator; ?>
-		<?php $formValidator->requiredFieldsValidator('fullname', 'email'); ?>
-		<?php echo $formValidator->summaryError(); ?>
+		<?php 
+			$valueAttributes = array(
+					'phone' => 'Телефон',
+					'email' => 'Email',
+					'fullname' => 'Ф.И.О.',
+				);
 
-	    <input type="text" name="fullname" class="form-control" placeholder="fullname:" value="<?php echo $formValidator->currentFormFieldValue('fullname'); ?>">
+			$formValidator = new formValidator;
+			$formValidator->requiredFieldsValidator('fullname', 'email');
+			$formValidator->attributeLabels($valueAttributes);
+			echo $formValidator->summaryError();
+		?>
+
+	    <input type="text" name="fullname" class="form-control" placeholder="<?php echo $formValidator->getAttributeLabel($valueAttributes, 'fullname') ?>" value="<?php echo $formValidator->currentFormFieldValue('fullname'); ?>">
 
 	    	<?php echo $formValidator->displayError('fullname'); ?>
 	    
 	    <br/>
 
-	    <input type="text" name="phone" class="form-control" placeholder="phone:" value="<?php echo $formValidator->currentFormFieldValue('phone'); ?>">
+	    <input type="text" name="phone" class="form-control" placeholder="<?php echo $formValidator->getAttributeLabel($valueAttributes, 'phone') ?>" value="<?php echo $formValidator->currentFormFieldValue('phone'); ?>">
 	    
 	    	<?php echo $formValidator->displayError('phone'); ?>
 	    
 	    <br/>
 	    
-	    <input type="text" name="email" class="form-control" placeholder="email:" value="<?php echo $formValidator->currentFormFieldValue('email'); ?>">
+	    <input type="text" name="email" class="form-control" placeholder="<?php echo $formValidator->getAttributeLabel($valueAttributes, 'email') ?>" value="<?php echo $formValidator->currentFormFieldValue('email'); ?>">
 	    
 	    	<?php echo $formValidator->displayError('email'); ?>
 	    
