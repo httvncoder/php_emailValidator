@@ -1,9 +1,13 @@
 <?php
 
-require_once(dirname(dirname(__FILE__)).'/helpers/varDump.php');
-
 /**
+ * formValidator	функции валидации форм, отображение ошибок
+ * @version 0.1
+ * @license https://www.gnu.org/licenses/gpl-3.0.html GPLv3
+ * @author Maxim Ishchenko <maxim.ishchenko@gmail.com>
+ * @copyright Copyright (c) Maxim Ishchenko <maxim.ishchenko@gmail.com>
  * 
+ * @uses  <?php session_start ?> в секции <head>; включить в файл описания формы - <?php require_once(dirname(__FILE__).'/requiredfields.php'); ?>; <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post"> ... </form> - действие при подтверждении формы, метод подтверждения; $formValidator = new formValidator - объявить класс; использовать описанные ниже функции внутри формы
  */
 class formValidator
 {
@@ -21,8 +25,9 @@ class formValidator
 
 	/**
 	 * attributeLabels description
+	 * @uses $valueAttributes = array('fieldName1' => 'fieldLabel1', ..., 'fieldNameN' => 'fieldLabelN'); $formValidator->attributeLabels($valueAttributes); задать ассоциативный массив, сопоставляющий имя поля (параметр name в input) и метку для отображения в данном поле, передать данный массив функции
 	 * @param  array $valueAttributesArray ассоциативный массив, содержит соответствия имен полей форм с метками.
-	 * @return false
+	 * @return none
 	 */
 	public function attributeLabels($valueAttributesArray)
 	{
@@ -37,8 +42,9 @@ class formValidator
 
 	/**
 	 * getAttributeLabel если существует массив, содержащий метки аттрибутов возвращает метку поля по его, если нет - название поля (параметр name в input)
+	 * @uses на примере placeholder: <input name="fieldname" ... placeholder="<?php echo $formValidator->getAttributeLabel('fieldname'); ?>">, где: "..." - остальные возможные параметры текстового поля input
 	 * @param  string $label имя поля
-	 * @return string        метка поля $label
+	 * @return string метка поля $label
 	 */
 	public function getAttributeLabel($label)
 	{
@@ -48,8 +54,9 @@ class formValidator
 
 	/**
 	 * displayError отображает ошибки валидации поля
+	 * @uses на примере placeholder: <input name="fieldname" ... > <?php echo $formValidator->displayError('fieldname'); ?>, где: "..." - остальные возможные параметры текстового поля input
 	 * @param  string $fieldName имя поля (параметр name в input)
-	 * @return string            при наличии ошибки валидации поля в сессии возвращает ее текст
+	 * @return string|false при наличии ошибки валидации поля в сессии возвращает ее текст
 	 */
 	public function displayError($fieldName)
 	{
@@ -58,9 +65,10 @@ class formValidator
 	}
 
 	/**
-	 * [currentFormFieldValue]
+	 * currentFormFieldValue подставляет в поле формы значение отправленное методом $_POST при ошибках валидации
+	 * @uses <input name="fieldname" ... value="<?php echo $formValidator->currentFormFieldValue('fieldname'); ?>">, где: "..." - остальные возможные параметры текстового поля input
 	 * @param  string $fieldName имя поля (параметр name в input)
-	 * @return string            при наличии данных в поле формы возвращает эти данные
+	 * @return string|false при наличии данных в поле формы возвращает эти данные
 	 */
 	public function currentFormFieldValue($fieldName)
 	{
@@ -68,21 +76,15 @@ class formValidator
 	}
 
 	/**
-	 * [summaryError description]
-	 * @param  [type] $fieldName [description]
-	 * @return [type]            [description]
+	 * summaryError отображает суммарную информацию об ошибках валидации формы
+	 * @uses echo $formValidator->summaryError()  отображает суммарную информацию об ошибках валидации в месте вызова
+	 * @param $sessionRange array возвращает массив сообщений об ошибках, в случае отсутствия - пустой массив
+	 * @return string|false возвращает тексты ошибок из области массива $_SESSION, указанной в переменной requireFieldsSessionRange 
 	 */
 	public function summaryError()
 	{
-		$elementsArray = func_get_args();
-		
-		$inverseElementsArray = array_flip($elementsArray);
-		$sessionRange = $_SESSION['requiredFields'];
-		$compareArgsSession = array_diff_assoc($sessionRange, $inverseElementsArray);
-
-		// echo array_key_exists($_SESSION['requiredFields'], $_SESSION) ? 'true' : 'false';
-		$errorMsg = implode(' ', $compareArgsSession);
-
+		$sessionRange = isset($_SESSION[$this->requireFieldsSessionRange]) ? $_SESSION[$this->requireFieldsSessionRange] : array();
+		$errorMsg = implode(' ', $sessionRange);
 		return !empty($errorMsg) ? '<div class="alert alert-danger text-center"><b>' . $errorMsg . '</b></div>' : false;
 	}
 
@@ -92,13 +94,13 @@ class formValidator
 	 * если указана область ($range) и элементы данной области ($elements) - будет удален каджый элемент в области
 	 * если область не укзана - удаление будет происходить в корне массива
 	 * если не указаны элементы ($elements) - будет удалена вся область
-	 * @param  string $range    область - вложенный массив массива $_SESSION
+	 * @uses $formValidator->clearSessionElements($rangeName) - удаление области сообщений из сессии; $formValidator->clearSessionElements($rangeName, $fieldsName) - удаление полей сообщений, перечисленных в массиве $fieldsName из области заданной в $rangeName сессии;
+	 * @param  string $range область - вложенный массив массива $_SESSION
 	 * @param  array $elements массив значений
-	 * @return false
+	 * @return none
 	 */
 	public function clearSessionElements($range = NULL, $elements = NULL)
 	{
-		$sessionRange = (isset($range)) ? $range : false;
 		if(isset($elements) && !empty($elements))
 		{
 			foreach ($elements as $k => $v) {
@@ -112,13 +114,18 @@ class formValidator
 	}
 
 	/**
-	 * [requiredFieldsValidator description]
-	 * @return [type] [description]
+	 * requiredVieldsValidator валидация обязательных полей формы
+	 * получает на входе список полей формы подлежащих заполнению
+	 * Очищает текущую сессию от возможных предыдущих ошибок валидации
+	 * В случае отправки данных формы методом $_POST, проверяет заполнены ли полученные на входе поля формы
+	 * Если указанное в качестве аргумента поле(-я) не заполнено(-ы) создает в массиве $_SESSION вложенный массив, в который записывает ошибки валидации формы
+	 * @uses  $formValidator->requiredFieldsValidator('fieldName1', 'fieldName2', ...,'fieldNameN')
+	 * @param  string $fieldName1, ..., fieldNameN имена полей (параметр name в input)
+	 * @return true|false
 	 */
 	public function requiredFieldsValidator()
 	{
 		$elementsArray = func_get_args();
-		// session_unset();
 		$this->clearSessionElements($this->requireFieldsSessionRange, false);
 		$inverseElementsArray = array_flip($elementsArray);
 		
@@ -128,7 +135,6 @@ class formValidator
 			foreach ($validateFileds as $k => $v) {
 				if(empty(trim($v)))
 				{
-					// $_SESSION[$sessionRange][$k] = '<p class="text-danger text-center">' . $k . ' - обязательный аттрибут <br/></p>';
 					$_SESSION[$this->requireFieldsSessionRange][$k] = '<p class="text-danger text-center">' . $this->getAttributeLabel($k) . ' - обязательный аттрибут <br/></p>';
 				}				
 			}
@@ -144,4 +150,5 @@ class formValidator
 
 		return !empty($compareArgsSession) ? false : true;		
 	}
-}
+
+} // formValidator endClass
