@@ -8,6 +8,21 @@
  * @copyright Copyright (c) Maxim Ishchenko <maxim.ishchenko@gmail.com>
  * 
  * @uses  <?php session_start ?> в секции <head>; включить в файл описания формы - <?php require_once(dirname(__FILE__).'/requiredfields.php'); ?>; <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post"> ... </form> - действие при подтверждении формы, метод подтверждения; $formValidator = new formValidator - объявить класс; использовать описанные ниже функции внутри формы
+ * 
+ * @todo 
+ * 		добавить:
+ *  		проверку поля email на существование; 
+ * 			общий и локальный файлы конфигурации;
+ * 			отправку email администратору;
+ * 			возможность отправки email с авторизацией;
+ * 			соединение с базой данных;
+ * 			интеграция с ubiquiti-hotspot;
+ * 			запись данных ubituiti-hotspot в БД;
+ * 			отображение, сортировка, фильтрация, введенных ранее данных;
+ * 			фиксация в БД отправленных администратору сообщений;
+ * 			проверка формата полей phone;
+ * 			заполнить README.md;
+ * 			Changelog.
  */
 class formValidator
 {
