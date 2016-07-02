@@ -24,6 +24,7 @@
 <body>
 
 	<form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post" id="requiredfields" style="width: 60%; margin: 0 auto;">
+	<!-- <form action="testFormResult.php" method="post" target="_self" id="requiredfields" style="width: 60%; margin: 0 auto;"> -->
 		
 		<?php 
 			$valueAttributes = array(
@@ -33,24 +34,25 @@
 				);
 
 			$formValidator = new formValidator;
-			$formValidator->requiredFieldsValidator('fullname', 'email');
 			$formValidator->attributeLabels($valueAttributes);
-			echo $formValidator->summaryError();
+			$formValidator->requiredFieldsValidator('fullname', 'email', 'phone');
+			// echo $formValidator->summaryError();
+
 		?>
 
-	    <input type="text" name="fullname" class="form-control" placeholder="<?php echo $formValidator->getAttributeLabel($valueAttributes, 'fullname') ?>" value="<?php echo $formValidator->currentFormFieldValue('fullname'); ?>">
+	    <input type="text" name="fullname" class="form-control" placeholder="<?php echo $formValidator->getAttributeLabel('fullname') ?>" value="<?php echo $formValidator->currentFormFieldValue('fullname'); ?>">
 
 	    	<?php echo $formValidator->displayError('fullname'); ?>
 	    
 	    <br/>
 
-	    <input type="text" name="phone" class="form-control" placeholder="<?php echo $formValidator->getAttributeLabel($valueAttributes, 'phone') ?>" value="<?php echo $formValidator->currentFormFieldValue('phone'); ?>">
+	    <input type="text" name="phone" class="form-control" placeholder="<?php echo $formValidator->getAttributeLabel('phone') ?>" value="<?php echo $formValidator->currentFormFieldValue('phone'); ?>">
 	    
 	    	<?php echo $formValidator->displayError('phone'); ?>
 	    
 	    <br/>
 	    
-	    <input type="text" name="email" class="form-control" placeholder="<?php echo $formValidator->getAttributeLabel($valueAttributes, 'email') ?>" value="<?php echo $formValidator->currentFormFieldValue('email'); ?>">
+	    <input type="text" name="email" class="form-control" placeholder="<?php echo $formValidator->getAttributeLabel('email') ?>" value="<?php echo $formValidator->currentFormFieldValue('email'); ?>">
 	    
 	    	<?php echo $formValidator->displayError('email'); ?>
 	    
@@ -67,10 +69,10 @@
 	      	<!-- </span> -->
 			<button type="reset" class="btn btn-default">
 		    	<i class="fa fa-refresh"></i> Сброс
-			</button>
+			</button><!-- 
 			<button type="button" class="btn btn-default" data-dismiss="modal">
 				<i class="fa fa-remove"></i> Закрыть
-			</button>
+			</button> -->
 		</p>		
 
 	</form><!-- requiredfieldsForm End -->
