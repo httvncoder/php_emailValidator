@@ -55,6 +55,7 @@
 
 			/**
 			 * Передать массив для присвоения меток полям формы
+			 * 
 			 * @see  $formValidator->attributeLabels()
 			 */
 			$formValidator->attributeLabels($valueAttributes);
@@ -63,13 +64,23 @@
 			 * Передать перечень полей, обязательных для заполнения
 			 * @see $formValidator->requiredFieldsValidator()
 			 */
-			$formValidator->requiredFieldsValidator('fullname', 'email', 'phone');
+			if($formValidator->requiredFieldsValidator('fullname', 'email', 'phone'))
+			{
+				$formValidator->checkEmailMX('email');				
+			}
+
+			
 
 			/**
 			 * Суммарное отображение ошибок валидации
 			 * @see $formValidator->summaryError()
 			 */
 			echo $formValidator->summaryError();
+
+
+			// echo '<pre>';
+			// var_dump($_SESSION);
+			// echo '</pre>';
 
 		?>
 

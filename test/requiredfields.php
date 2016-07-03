@@ -7,12 +7,9 @@
  * @author Maxim Ishchenko <maxim.ishchenko@gmail.com>
  * @copyright Copyright (c) Maxim Ishchenko <maxim.ishchenko@gmail.com>
  * 
- * @uses  <?php session_start ?> в секции <head>; включить в файл описания формы - <?php require_once(dirname(__FILE__).'/requiredfields.php'); ?>; <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post"> ... </form> - действие при подтверждении формы, метод подтверждения; $formValidator = new formValidator - объявить класс; использовать описанные ниже функции внутри формы
- * 
  * @todo 
  * 		добавить:
- *  		проверку поля email на существование; 
- * 			общий и локальный файлы конфигурации;
+ *  		проверку поля email на существование;
  * 			отправку email администратору;
  * 			возможность отправки email с авторизацией;
  * 			соединение с базой данных;
@@ -23,6 +20,32 @@
  * 			проверка формата полей phone;
  * 			заполнить README.md;
  * 			Changelog.
+ */
+
+/**
+ * Корневая директория сайта, относительно текущего файла
+ */
+define('__ROOT__', dirname(dirname(__FILE__)));
+
+/**
+ *	Массив CONFIG, содержащий значения общего и персонального файлов конфигурации
+ *	@uses CONFIG['paramName'] для обращения к значениям массива использовать CONFIG['вызываемый параметр']
+ *	@return array возвращает массив параметров
+ */
+define("CONFIG", array_merge(
+			require_once((__ROOT__).'/config/config.inc.php'),
+			require_once((__ROOT__).'/config/config.inc.local.php')
+		)
+	);
+
+require_once(dirname(dirname(__FILE__)).'/helpers/varDump.php');
+
+/** 
+ * formValidator	функции валидации форм, отображение ошибок
+ * @uses  <?php session_start ?> в секции <head>;
+ * включить в файл описания формы - <?php require_once(dirname(__FILE__).'/requiredfields.php'); ?>;
+ * <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post"> ... </form> - действие при подтверждении формы, метод подтверждения;
+ * $formValidator = new formValidator - объявить класс; использовать описанные ниже функции внутри формы
  */
 class formValidator
 {
@@ -104,6 +127,35 @@ class formValidator
 	}
 
 	/**
+	 * addSessionMessages добавляет сообщения к текущей сессии
+	 * @uses  $formValidator->addSessionMessages($range, $attribute, $value); если нет необходимости указывать область $range - $formValidator->addSessionMessages($range=false, $attribute, $value); для добавления нескольких сообщений - создать массив текстов сообщений и вызывать данный метод через foreach:
+	 * $values = array('message1', ..., 'messageN')
+	 * foreach($values as $value)
+	 * {
+	 * 	$formValidator->addSessionMessages($range, $attribute, $value);
+	 * }
+	 * @param array $range      область массива $_SESSION для хранения сообщений
+	 * @param string $attributes название аттрибута массива $_SESSION для хранения сообщений
+	 * @param string $values     текст сообщения
+	 * @return  none
+	 */
+	public function addSessionMessages($range=NULL, $attributes, $values)
+	{
+		if(isset($range) && !empty($range))
+		{
+			$_SESSION[$range][$attributes] = $values;
+		}
+		elseif(!isset($range))
+		{
+			$_SESSION[$attributes] = $values;
+		}
+		else
+		{
+			die('Заданные аттрибуты не корректны');
+		}
+	}
+
+	/**
 	 * Очищает заданную в параметрах область сесии
 	 * область $range - вложенный массив
 	 * если указана область ($range) и элементы данной области ($elements) - будет удален каджый элемент в области
@@ -150,7 +202,8 @@ class formValidator
 			foreach ($validateFileds as $k => $v) {
 				if(empty(trim($v)))
 				{
-					$_SESSION[$this->requireFieldsSessionRange][$k] = '<p class="text-danger text-center">' . $this->getAttributeLabel($k) . ' - обязательный аттрибут <br/></p>';
+					// $_SESSION[$this->requireFieldsSessionRange][$k] = '<p class="text-danger text-center">' . $this->getAttributeLabel($k) . ' - обязательный аттрибут <br/></p>';
+					$this->addSessionMessages($this->requireFieldsSessionRange, $k,'<p class="text-danger text-center">' . $this->getAttributeLabel($k) . ' - обязательный аттрибут <br/></p>');
 				}				
 			}
 
@@ -166,4 +219,76 @@ class formValidator
 		return !empty($compareArgsSession) ? false : true;		
 	}
 
+	/**
+	 * getFields проверка пустых полей
+	 * @uses $formValidator->getFields('fieldName1', ..., 'fieldNameN')
+	 * @return true|false возвращает true/false если переданный(-е) аргумент(-ы) существует/не существует
+	 */
+	public function getFields()
+	{
+		$fieldsArray = func_get_args();
+		foreach ($fieldsArray as $k=>$v) {
+			return (!isset($v) || empty($v)) ? false : true;
+		}
+	}
+
+	/**
+	 * emailFormat проверяет корректность заполнения поля email
+	 * @param  string $emailField поле ввода email для валидации
+	 * @return true|false возвращает true/false если переданный аргумент - адрес электронной почты
+	 */
+	public function emailFormat($emailField)
+	{
+		if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST[$emailField]))
+		{
+			if($this->getFields($emailField)){
+				if(!filter_var($_POST[$emailField], FILTER_VALIDATE_EMAIL))
+				{
+					$this->addSessionMessages($this->requireFieldsSessionRange, 'emailFormat', '<p class="text-danger text-center"> В поле "Email" введено значение некорректного формата <br/></p>');
+					return false;
+				}
+				else
+				{
+					return true;
+				}
+			}
+			else
+			{
+				$this->addSessionMessages($this->requireFieldsSessionRange, 'emailFormat', '<p class="text-danger text-center"> В поле "Email" введено значение некорректного формата <br/></p>');
+			}
+		}
+		else
+		{
+			$this->addSessionMessages($this->requireFieldsSessionRange, 'emailFormat', '<p class="text-danger text-center"> Передано некорректное значение поля валидации Email <br/></p>');
+					return false;
+		}
+	}
+
+	/**
+	 * checkEmailMX определяет доменную часть переданного аргумента (email), производит попытку разрешить доменное имя, в случае успеха возвращает массив SMTP-серверов, обслуживающих данный email
+	 * @param  string $emailField поле email для валидации
+	 * @return array|false возвращает массив SMTP-серверов при наличии обнаружения в DNS-окружении, false - при отсутствии
+	 */
+	public function checkEmailMX($emailField)
+	{
+		if($this->emailFormat($emailField))
+		{
+			$emailDomain = substr(strrchr($_POST[$emailField], "@"), 1);		
+			$emailDomain = dns_get_record($emailDomain, DNS_MX);
+			if(isset($emailDomain) && !empty($emailDomain)) 
+			{
+				foreach ($emailDomain as $mx) {
+					$mxQuery[] = $mx['target'];
+				}
+				return $mxQuery;
+			}
+			else
+			{
+				$this->addSessionMessages($this->requireFieldsSessionRange, 'emailFormat', '<p class="text-danger text-center"> Домен указанного email не обнаружен в DNS. Возможно он не существует. Проверьте правильность ввода Email <br/></p>');
+				return false;
+			}
+		}
+	}
+
 } // formValidator endClass
+
