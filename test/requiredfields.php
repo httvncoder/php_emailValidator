@@ -3,7 +3,7 @@
 /**
  * formValidator	функции валидации форм, отображение ошибок
  * @version 0.1
- * @license https://www.gnu.org/licenses/gpl-3.0.html GPLv3
+ * @license https://opensource.org/licenses/BSD-3-Clause GPLv3 BSD-3-Clause
  * @author Maxim Ishchenko <maxim.ishchenko@gmail.com>
  * @copyright Copyright (c) Maxim Ishchenko <maxim.ishchenko@gmail.com>
  * 
