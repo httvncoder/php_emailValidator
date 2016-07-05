@@ -1,0 +1,4 @@
+RewriteEngine on //Запускаем движок замены
+RewriteCond %{REQUEST_FILENAME} !-d //если запрашиваемый объект не папка
+RewriteCond %{REQUEST_FILENAME}\.php -f //если запрашиваемый объект с дописанным расширением php - файл
+RewriteRule ^(.*)$ $1.php //делаем замену с дописыванием .php

@@ -257,11 +257,6 @@ class formValidator
 				$this->addSessionMessages($this->requireFieldsSessionRange, 'emailFormat', '<p class="text-danger text-center"> В поле "Email" введено значение некорректного формата <br/></p>');
 			}
 		}
-		else
-		{
-			$this->addSessionMessages($this->requireFieldsSessionRange, 'emailFormat', '<p class="text-danger text-center"> Передано некорректное значение поля валидации Email <br/></p>');
-					return false;
-		}
 	}
 
 	/**
@@ -287,6 +282,75 @@ class formValidator
 				$this->addSessionMessages($this->requireFieldsSessionRange, 'emailFormat', '<p class="text-danger text-center"> Домен указанного email не обнаружен в DNS. Возможно он не существует. Проверьте правильность ввода Email <br/></p>');
 				return false;
 			}
+		}
+	}
+
+	/**
+	 * [mxConnect description]
+	 * @param  [type] $emailField [description]
+	 * @return [type]             [description]
+	 */
+	public function mxConnect($emailField)
+	{
+		if($this->checkEmailMX($emailField))
+		{
+			foreach ($this->checkEmailMX($emailField) as $mxHost) {			
+				$fp = @fsockopen($mxHost,25, $errno, $errstr, 5);
+				if($fp)
+				{
+					$result[0] = trim(fgets($fp)); // $result[0] = substr($result[0], 0, 3);
+
+					fwrite($fp, "HELO " . CONFIG['app_url'] . "\r\n");
+	    			$result[1] = trim(fgets($fp)); // $result[1] = substr($result[1], 0, 3);
+
+					fwrite($fp, "MAIL FROM: <" . CONFIG['app_email'] . "> \r\n");
+	    			$result[2] = trim(fgets($fp)); // $result[2] = substr($result[2], 0, 3);
+
+					fwrite($fp, "RCPT TO: <" . $_POST['email'] . "> \r\n");
+	    			$result[3] = trim(fgets($fp)); // $result[3] = substr($result[3], 0, 3);
+
+					fwrite($fp, "QUIT" . "\r\n");
+	    			$result[4] = trim(fgets($fp)); // $result[4] = substr($result[4], 0, 3);
+
+					fclose($fp);
+
+					break;
+				}
+				else
+				{
+					$this->addSessionMessages($this->requireFieldsSessionRange, 'emailFormat', '<p class="text-danger text-center"> Невозможно подключиться к MX-серверу. Недоступен MX-сервер или 25-й порт указанного сервера. <br/></p>');
+					die();					
+				}
+			}
+			return $fp ? $result : false;
+		}
+	}
+
+	public function emailQuery($emailField)
+	{
+		if($this->mxConnect($emailField))
+		{
+
+			if(substr($this->mxConnect($emailField)[3], 0, 1) == 2)
+			{
+				$this->addSessionMessages($this->requireFieldsSessionRange, 'emailFormat', '<p class="text-danger text-center"> Email существует! <br/></p>');
+			}
+			elseif(substr($this->mxConnect($emailField)[3], 0, 1) == 4)
+			{
+				$this->addSessionMessages($this->requireFieldsSessionRange, 'emailFormat', '<p class="text-danger text-center"> Сервер временно отклонил попытку соединения. Повторите попытку позже! <br/></p>');				
+				// echo $notrifications->displayNotifications(5, mxConnect()[3] . '<br/>' . $counters->timeExecution());
+			}
+			elseif(substr($this->mxConnect($emailField)[3], 0, 1) == 5)
+			{
+				$this->addSessionMessages($this->requireFieldsSessionRange, 'emailFormat', '<p class="text-danger text-center"> Email не существует! <br/></p>');
+			}
+
+
+		}
+		else
+		{
+			$this->addSessionMessages($this->requireFieldsSessionRange, 'emailFormat', '<p class="text-danger text-center"> Невозможно установить соедининие с MX-сервером <br/></p>');
+			// die();
 		}
 	}
 

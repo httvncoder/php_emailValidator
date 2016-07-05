@@ -66,7 +66,7 @@
 			 */
 			if($formValidator->requiredFieldsValidator('fullname', 'email', 'phone'))
 			{
-				$formValidator->checkEmailMX('email');				
+				$formValidator->emailQuery('email');				
 			}
 
 			
