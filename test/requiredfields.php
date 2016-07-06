@@ -349,7 +349,7 @@ class formValidator
 		}
 		else
 		{
-			$this->addSessionMessages($this->requireFieldsSessionRange, 'emailFormat', '<p class="text-danger text-center"> Невозможно установить соедининие с MX-сервером <br/></p>');
+			// $this->addSessionMessages($this->requireFieldsSessionRange, 'emailFormat', '<p class="text-danger text-center"> Невозможно установить соедининие с MX-сервером <br/></p>');
 			// die();
 		}
 	}
