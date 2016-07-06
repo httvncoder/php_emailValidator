@@ -38,8 +38,6 @@ define("CONFIG", array_merge(
 		)
 	);
 
-require_once(dirname(dirname(__FILE__)).'/helpers/varDump.php');
-
 /** 
  * formValidator	функции валидации форм, отображение ошибок
  * @uses  <?php session_start ?> в секции <head>;
@@ -326,6 +324,11 @@ class formValidator
 		}
 	}
 
+	/**
+	 * [emailQuery description]
+	 * @param  [type] $emailField [description]
+	 * @return [type]             [description]
+	 */
 	public function emailQuery($emailField)
 	{
 		if($this->mxConnect($emailField))
@@ -334,6 +337,7 @@ class formValidator
 			if(substr($this->mxConnect($emailField)[3], 0, 1) == 2)
 			{
 				$this->addSessionMessages($this->requireFieldsSessionRange, 'emailFormat', '<p class="text-danger text-center"> Email существует! <br/></p>');
+				unset($_POST);
 			}
 			elseif(substr($this->mxConnect($emailField)[3], 0, 1) == 4)
 			{
@@ -355,4 +359,3 @@ class formValidator
 	}
 
 } // formValidator endClass
-
