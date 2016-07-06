@@ -16,13 +16,13 @@
 				/**
 				 * Шаблон оформления сайта
 				 */
-				require_once(dirname(dirname(__FILE__)).'/web/layouts/main.php');
+				require_once(dirname(__FILE__).'/web/layouts/main.php');
 
 				/**
 				 * Подключение файла, содержащего функции валидации полей формы
 				 * @see  $formValidator
 				 */
-				require_once(dirname(__FILE__).'/requiredfields.php'); 
+				require_once(dirname(__FILE__).'/helpers/formValidator.php'); 
 
 
 				$formName = 'Форма предоставления доступа к публичному сегменту сети WiFi';
@@ -197,7 +197,7 @@
 
 <script type="text/javascript" src="/web/js/phoneMask.js">
 	/**
-	 * 
+	 * Маска поля телефон
 	 */
 	jQuery(function($){
 	   $("#phone").mask("+7 (999) 999-99-99");
